@@ -7,16 +7,16 @@ import time
 app = Flask(__name__)
 
 # Database connection using environment variables
-DB_HOST = 'localhost'
-DB_PORT = '5432'
-DB_NAME = 'phrases'
-DB_USER = 'postgres'
-DB_PASSWORD = '1928'
-#DB_HOST = os.environ.get('DB_HOST')
-#DB_PORT = os.environ.get('DB_PORT', 5432)
-#DB_NAME = os.environ.get('DB_NAME')
-#DB_USER = os.environ.get('DB_USER')
-#DB_PASSWORD = os.environ.get('DB_PASSWORD')
+# DB_HOST = 'localhost'
+# DB_PORT = '5432'
+# DB_NAME = 'phrases'
+# DB_USER = 'postgres'
+# DB_PASSWORD = '1928'
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = os.environ.get('DB_PORT', 5432)
+DB_NAME = os.environ.get('DB_NAME')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
 
 def get_db_connection():
     conn = psycopg2.connect(
