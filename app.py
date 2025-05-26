@@ -88,5 +88,28 @@ def get_phrase_details():
     else:
         return jsonify({'error': 'Phrase not found'}), 404
 
+# --- Route: Get Credentials ---
+@app.route('/phrases/creds', methods=['GET'])
+def get_credentials():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT cred_name, cred_val FROM credentials")
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        fetched_credentials = {row[0]: row[1] for row in rows}
+
+        # Fill in any missing values with defaults
+       # final_credentials = DEFAULT_CREDENTIALS.copy()
+        #final_credentials.update(fetched_credentials)
+
+        return jsonify(fetched_credentials)
+
+    except Exception as e:
+        print(f"[ERROR] Fetching credentials failed: {e}")
+#        return jsonify(DEFAULT_CREDENTIALS)
+
 if __name__ == '__main__':
     app.run(debug=True)
