@@ -1,5 +1,6 @@
 # app.py
 from flask import Flask, request, jsonify
+from flask import make_response
 import psycopg2
 import os
 import time
@@ -7,11 +8,6 @@ import time
 app = Flask(__name__)
 
 # Database connection using environment variables
-# DB_HOST = 'localhost'
-# DB_PORT = '5432'
-# DB_NAME = 'phrases'
-# DB_USER = 'postgres'
-# DB_PASSWORD = '1928'
 DB_HOST = os.environ.get('DB_HOST')
 DB_PORT = os.environ.get('DB_PORT', 5432)
 DB_NAME = os.environ.get('DB_NAME')
@@ -35,18 +31,6 @@ def slow_down_if_suspicious():
         # Suspect it might be a bot/script -> slow down
         time.sleep(3)
 
-# --- Route: Get phrases by level ---
-@app.route('/phrases/level/<level>', methods=['GET'])
-def get_phrases_by_level(level):
-    slow_down_if_suspicious()
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT phrase FROM phraseTable WHERE level = %s", (level,))
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    phrases = [row[0] for row in rows]
-    return jsonify(phrases)
 
 # --- Route: Search phrases ---
 @app.route('/phrases/search', methods=['GET'])
@@ -88,7 +72,47 @@ def get_phrase_details():
     else:
         return jsonify({'error': 'Phrase not found'}), 404
 
-# --- Route: Get Credentials ---
+# --- Route: Get phrases by level ---
+@app.route('/phrases/level/<level>', methods=['GET'])
+def get_phrases_by_level(level):
+    slow_down_if_suspicious()
+    print("lo kig ki")
+    offset = int(request.args.get('offset', 0))  # default 0
+    limit = int(request.args.get('limit', 200))  # default 200
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT phrase FROM phraseTable WHERE level = %s LIMIT %s OFFSET %s",
+        (level, limit, offset)
+    )
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    phrases = [row[0] for row in rows]
+    return jsonify(phrases)
+
+
+# --- Route: Search phrases by level ---
+@app.route('/phrases/level_search/<searchByLevel>', methods=['GET'])
+def search_phrases_by_level(searchByLevel):
+    slow_down_if_suspicious()
+    query = request.args.get('query', '').strip()
+    if len(query) < 5:
+        return jsonify([])
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT phrase FROM phraseTable WHERE level = %s AND phrase ILIKE %s",
+        (searchByLevel, f"%{query}%")
+    )
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    phrases = [row[0] for row in rows]
+    return jsonify(phrases)
+
 @app.route('/phrases/creds', methods=['GET'])
 def get_credentials():
     try:
