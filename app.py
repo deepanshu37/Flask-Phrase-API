@@ -101,15 +101,14 @@ def get_credentials():
 
         fetched_credentials = {row[0]: row[1] for row in rows}
 
-        # Fill in any missing values with defaults
-       # final_credentials = DEFAULT_CREDENTIALS.copy()
-        #final_credentials.update(fetched_credentials)
-
-        return jsonify(fetched_credentials)
+        # Prevent caching
+        response = make_response(jsonify(fetched_credentials))
+        response.headers['Cache-Control'] = 'no-store'
+        return response
 
     except Exception as e:
         print(f"[ERROR] Fetching credentials failed: {e}")
-#        return jsonify(DEFAULT_CREDENTIALS)
+        return jsonify({})  # Return something even on failure
 
 if __name__ == '__main__':
     app.run(debug=True)
