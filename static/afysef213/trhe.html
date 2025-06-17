@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Phrase</title>
+</head>
+<body>
+    <h2>Add New Phrase</h2>
+    <form action="/3456k34/phrases/add" method="POST">
+        <label for="phrase">Phrase:</label><br>
+        <input type="text" id="phrase" name="phrase" required><br><br>
+
+        <label for="english_meaning">English Meaning:</label><br>
+        <input type="text" id="english_meaning" name="english_meaning" required><br><br>
+
+        <label for="hindi_meaning">Hindi Meaning:</label><br>
+        <input type="text" id="hindi_meaning" name="hindi_meaning" required><br><br>
+
+        <label for="example">Example Sentence:</label><br>
+        <input type="text" id="example" name="example" required><br><br>
+        
+        <select name="level" id="level">
+            <option value="h">Hard</option>
+            <option value="e">Easy</option>
+            <option value="m">Medium</option>
+            <option value="n">Native</option>
+        </select>
+
+        <input type="submit" value="Add Phrase">
+    </form>
+</body>
+</html>
